@@ -14,19 +14,20 @@ const app = express();
 const server = http.createServer(app);
 
 // ✅ Pinger to keep server active (optional)
-const url = "http://localhost:5000";
-const interval = 30000;
-function reloadWebsite() {
-  axios
-    .get(url)
-    .then(() => {
-     // console.log("website reloaded");
-    })
-    .catch((error) => {
-      console.error(`Error: ${error.message}`);
-    });
+if (process.env.NODE_ENV !== "production") {
+  const url = "http://localhost:5000";
+  const interval = 30000;
+
+  function reloadWebsite() {
+    axios
+      .get(url)
+      .catch((error) => {
+        console.error(`Pinger error: ${error.message}`);
+      });
+  }
+
+  setInterval(reloadWebsite, interval);
 }
-setInterval(reloadWebsite, interval);
 
 // ✅ Setup Socket.IO with CORS
 const io = new Server(server, {
